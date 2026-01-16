@@ -81,12 +81,12 @@ const StudentCarousel = () => {
             >
               {/* LEFT IMAGE */}
 
-              <img
-                src="/images/im-1.jpg"
-                alt="test"
-                width="300"
-                height="200"
-              />
+            <img
+  src="/react-api/images/im-1.jpg"
+  alt="student"
+  width="300"
+  height="200"
+/>
 
               {/* RIGHT CONTENT */}
               <div>
@@ -104,3 +104,4 @@ const StudentCarousel = () => {
 };
 
 export default StudentCarousel;
+
