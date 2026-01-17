@@ -10,42 +10,44 @@ const SHEET_URL =
 const StudentCarousel = () => {
   const [students, setStudents] = useState([]);
 
-  useEffect(() => {
-    fetch(SHEET_URL)
-      .then((res) => res.text())
-      .then((csv) => {
-        const rows = csv.split("\n").slice(1);
 
-        const data = rows
-          .map((row, index) => {
-            const cols = row.split(",");
+useEffect(() => {
+  fetch(SHEET_URL)
+    .then((res) => res.text())
+    .then((csv) => {
+      const rows = csv.split("\n").slice(1);
 
-            let imageUrl = (cols[4] || "").trim();
+      const data = rows
+        .filter(row => row.trim() !== "" && row.split(",").length >= 5)
+        .map((row, index) => {
+          const cols =
+            row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
 
-            // Convert Google Drive link → direct image link
-            if (imageUrl.includes("drive.google.com")) {
-              const fileId =
-                imageUrl.split("/d/")[1]?.split("/")[0] ||
-                imageUrl.split("id=")[1];
+          let imageUrl = (cols[4] || "").replace(/"/g, "").trim();
 
-              if (fileId) {
-                imageUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-              }
+          if (imageUrl.includes("drive.google.com")) {
+            const fileId =
+              imageUrl.split("/d/")[1]?.split("/")[0] ||
+              imageUrl.split("id=")[1];
+
+            if (fileId) {
+              imageUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
             }
+          }
 
-            return {
-              id: cols[0] || index + 1,
-              name: cols[1] || "Student",
-              course: cols[2] || "N/A",
-              year: cols[3] || "N/A",
-              image: imageUrl,
-            };
-          })
-          .filter((s) => s.name);
+          return {
+            id: cols[0]?.replace(/"/g, "") || index + 1,
+            name: cols[1]?.replace(/"/g, "") || "Student",
+            course: cols[2]?.replace(/"/g, "") || "N/A",
+            year: cols[3]?.replace(/"/g, "") || "N/A",
+            image: imageUrl,
+          };
+        });
 
-        setStudents(data);
-      });
-  }, []);
+      setStudents(data);
+    });
+}, []);
+
 
   const settings = {
     dots: true,
@@ -80,13 +82,23 @@ const StudentCarousel = () => {
               }}
             >
               {/* LEFT IMAGE */}
-
-            <img
-  src="/react-api/images/im-1.jpg"
-  alt="student"
-  width="300"
-  height="200"
+<img
+  src={process.env.PUBLIC_URL + (student.image || "/images/im-1.jpg")}
+  alt={student.name}
+  style={{
+    width: "200px",
+    height: "200px",
+    objectFit: "cover",
+    borderRadius: "12px",
+  }}
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src =
+      process.env.PUBLIC_URL + "/images/im-1.jpg";
+  }}
 />
+
+
 
               {/* RIGHT CONTENT */}
               <div>
@@ -104,4 +116,3 @@ const StudentCarousel = () => {
 };
 
 export default StudentCarousel;
-
