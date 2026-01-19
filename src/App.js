@@ -1,4 +1,4 @@
-import StudentCarousel from "./components/StudentCarousel";
+import StudentCarousel from "./components/Carousel";
 
 function App() {
   return (
@@ -17,6 +17,9 @@ function App() {
       </h2>
 
       <StudentCarousel />
+
+    
+
     </>
   );
 }
